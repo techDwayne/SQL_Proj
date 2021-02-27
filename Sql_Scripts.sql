@@ -1,6 +1,6 @@
 --Udemy 70-461 SQL Training 
+--Stored Procedure with IF condition
 
---If exists (select * from sys.procedures where name like 'EmployeeView')
 if OBJECT_ID('EmployeeView', 'P') is not null
 drop proc EmployeeView
 go
@@ -8,11 +8,19 @@ go
 create proc EmployeeView (@EmpNum int) as
 begin
 	if exists (select * from tblEmployee where EmployeeNumber = @EmpNum) 
+	begin	
+	if @EmpNum < 300
 	begin
 		select EmployeeNumber, EmployeeFirstName, EmployeeLastName
-		from tblEmployee as EmployeeNumber
+		from tblEmployee
 		where EmployeeNumber = @EmpNum
 	end
-	 else Select 'No Employee' as EmployeeNumber
+	else 
+		begin
+			select EmployeeNumber, EmployeeFirstName, EmployeeLastName
+			from tblEmployee 
+			where EmployeeNumber = @EmpNum
+			select * from tblTransaction where EmployeeNumber = @EmpNum 
+		end
+	end 
 end
-
