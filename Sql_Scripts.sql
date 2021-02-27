@@ -1,7 +1,7 @@
 --Udemy 70-461 SQL Training 
 
 --If exists (select * from sys.procedures where name like 'EmployeeView')
-if OBJECT_ID('EmployeeView') is not null
+if OBJECT_ID('EmployeeView', 'P') is not null
 drop proc EmployeeView
 go
 
