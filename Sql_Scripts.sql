@@ -1,3 +1,5 @@
+--Udemy 70-461 SQL Training 
+
 If exists (select * from sys.procedures where name like 'EmployeeView')
 drop proc EmployeeView
 go
@@ -12,3 +14,4 @@ begin
 	end
 	 else Select 'No Employee' as EmployeeNumber
 end
+
