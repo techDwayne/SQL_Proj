@@ -196,7 +196,7 @@ on E.EmployeeNumber = A.EmployeeNumber
 
  /* CUME_DIST() and PERCENT_RANK() */
  
- select A.EmployeeNumber,A.AttendanceMonth, A.NumberAttendance, 
+select A.EmployeeNumber,A.AttendanceMonth, A.NumberAttendance, 
 CUME_DIST()		over(partition by E.EmployeeNumber 
 				order by A.AttendanceMonth) as CumeDist, /* gets the cumulative distribution between a value withing a group of values*/
 PERCENT_RANK()	over(partition by E.EmployeeNumber 
@@ -209,6 +209,25 @@ CUME_DIST( )
     OVER ( [ partition_by_clause ] order_by_clause )  
 PERCENT_RANK( )  
     OVER ( [ partition_by_clause ] order_by_clause )  */  
+
+
+/* Percentile_Cont() and Percentile_Disc */
+
+select Distinct EmployeeNumber,
+PERCENTILE_CONT (0.5) Within Group (Order By NumberAttendance) over (Partition By EmployeeNumber) as AverageCont,
+PERCENTILE_DISC (0.5) Within Group (Order By NumberAttendance) Over (Partition By EmployeeNumber) as AverageDisc
+from tblAttendance
+
+/* Syntax: 
+PERCENTILE_CONT ( numeric_literal )   
+    WITHIN GROUP ( ORDER BY order_by_expression [ ASC | DESC ] )  
+    OVER ( [ <partition_by_clause> ] )
+PERCENTILE_DISC ( numeric_literal ) WITHIN GROUP ( ORDER BY order_by_expression [ ASC | DESC ] )  
+    OVER ( [ <partition_by_clause> ] )
+*/
+
+
+	
 	
 
  
