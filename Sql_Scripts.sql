@@ -226,10 +226,42 @@ PERCENTILE_DISC ( numeric_literal ) WITHIN GROUP ( ORDER BY order_by_expression 
     OVER ( [ <partition_by_clause> ] )
 */
 
+/* Group By rolloup: 
+Creates a group for each combination of column expressions. In addition, it "rolls up" the results into subtotals and grand totals. To do this, it moves from right to left decreasing the number of column expressions over which it creates groups and the aggregation(s).
+
+To remove nulls, use GROUPING and GROUPING_ID
+GROUPING--Indicates whether a specified column expression in a GROUP BY list is aggregated or not. GROUPING returns 1 for aggregated or 0 for not aggregated in the result set. GROUPING can be used only in the SELECT <select> list, HAVING, and ORDER BY clauses when GROUP BY is specified. GROUPING is used to distinguish the null values that are returned by ROLLUP, CUBE or GROUPING SETS from standard null values. The NULL returned as the result of a ROLLUP, CUBE or GROUPING SETS operation is a special use of NULL. This acts as a column placeholder in the result set and means all.
+
+GROUPING_ID--Is a function that computes the level of grouping. GROUPING_ID can be used only in the SELECT <select> list, HAVING, or ORDER BY clauses when GROUP BY is specified. The GROUPING_ID <column_expression> must exactly match the expression in the GROUP BY list. For example, if you are grouping by DATEPART (yyyy, <column name>), use GROUPING_ID (DATEPART (yyyy, <column name>)); or if you are grouping by <column name>, use GROUPING_ID (<column name>).
+*/
+select E.Department, E.EmployeeNumber, A.AttendanceMonth as AttendanceMonth, Sum(A.NumberAttendance) as NumberAttendance,
+GROUPING (E.EmployeeNumber) as EmployeeNumberGroupedBy, 
+GROUPING_ID (E.Department, E.EmployeeNumber, A.AttendanceMonth) as EmployeeNumberGroupedID
+from tblEmployee as E join tblAttendance as A
+on E.EmployeeNumber = A.EmployeeNumber
+group by rollup (E.Department, E.EmployeeNumber, A.AttendanceMonth)
+Order by Department, EmployeeNumber, AttendanceMonth
+
+
+/*CUBE
+GROUP BY CUBE creates groups for all possible combinations of columns. For GROUP BY CUBE (a, b) the results has groups for unique values of (a, b), (NULL, b), (a, NULL), and (NULL, NULL).
+
+*/
+select E.Department, E.EmployeeNumber, A.AttendanceMonth as AttendanceMonth, Sum(A.NumberAttendance) as NumberAttendance,
+GROUPING (E.EmployeeNumber) as EmployeeNumberGroupedBy, 
+GROUPING_ID (E.Department, E.EmployeeNumber, A.AttendanceMonth) as EmployeeNumberGroupedID
+from tblEmployee as E join tblAttendance as A
+on E.EmployeeNumber = A.EmployeeNumber
+group by cube (E.Department, E.EmployeeNumber, A.AttendanceMonth)
+Order by Department, EmployeeNumber, AttendanceMonth
 
 	
-	
+/* GROUPING SET
+The GROUPING SETS option gives you the ability to combine multiple GROUP BY clauses into one GROUP BY clause. The results are the equivalent of UNION ALL of the specified groups.
 
+For example, GROUP BY ROLLUP (Country, Region) and GROUP BY GROUPING SETS ( ROLLUP (Country, Region) ) return the same results.
+
+When GROUPING SETS has two or more elements, the results are a union of the elements
  
 	
 	
