@@ -1,4 +1,13 @@
 --Udemy 70-461 SQL Training 
+/* script to change DB Owner in MS-SQL
+*/
+
+
+USE <DatabaseName>
+GO
+sp_changedbowner 'domain\username'
+
+
 --Stored Procedure with IF condition
 
 if OBJECT_ID('EmployeeView', 'P') is not null
@@ -244,7 +253,8 @@ Order by Department, EmployeeNumber, AttendanceMonth
 
 
 /*CUBE
-GROUP BY CUBE creates groups for all possible combinations of columns. For GROUP BY CUBE (a, b) the results has groups for unique values of (a, b), (NULL, b), (a, NULL), and (NULL, NULL).
+GROUP BY CUBE creates groups for all possible combinations of columns. 
+For GROUP BY CUBE (a, b) the results has groups for unique values of (a, b), (NULL, b), (a, NULL), and (NULL, NULL).
 
 */
 select E.Department, E.EmployeeNumber, A.AttendanceMonth as AttendanceMonth, Sum(A.NumberAttendance) as NumberAttendance,
@@ -263,7 +273,21 @@ For example, GROUP BY ROLLUP (Country, Region) and GROUP BY GROUPING SETS ( ROLL
 
 When GROUPING SETS has two or more elements, the results are a union of the elements
  
-	
+*/
+
+/* SubQuery
+A subquery is a SQL query within a query.
+They are nested queries that provide data to the enclosing query.
+
+Subqueries can return individual values or a list of records.
+Note that subquery statements are enclosed between parenthesis. 
+*/
+select * 
+from tblTransaction as T
+Where EmployeeNumber in
+    (Select EmployeeNumber from tblEmployee where EmployeeLastName like 'y%')
+order by EmployeeNumber
+
 	
 
 
