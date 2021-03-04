@@ -292,12 +292,21 @@ select *
 from tblTransaction as T
 Where EmployeeNumber not in
     (Select EmployeeNumber from tblEmployee where EmployeeLastName like 'y%')
-order by EmployeeNumber --must be in tblTransaction, and NOT 126-129
+order by EmployeeNumber --must be in tblTransaction, and NOT 126-129, 
+--equivalent to Left Join
 
 select * 
 from tblTransaction as T
 Where EmployeeNumber in
     (Select EmployeeNumber from tblEmployee where EmployeeLastName  not like 'y%')
 order by EmployeeNumber --must be in tblEmployee and tblTransaction, and NOT 126-129	
+--equivalent to Inner Join
 
+select * 
+from tblTransaction as T
+Where EmployeeNumber <> all --gives all BUT what is in the subquery below
+    (Select EmployeeNumber from tblEmployee where EmployeeLastName like 'y%')
+order by EmployeeNumber
 
+--any/some == OR
+--all == AND
