@@ -383,6 +383,53 @@ from tblGroup
 group by TheGroup
 order by TheGroup 
 
+/* Pivot command
+same as a pivot table in Excel
+PIVOT rotates a table-valued expression by turning the unique values from one column in the expression into multiple columns in the output. And PIVOT runs aggregations where they're required on any remaining column values that are wanted in the final output.
+
+
+syntax: 
+
+SELECT <non-pivoted column>,  
+    [first pivoted column] AS <column name>,  
+    [second pivoted column] AS <column name>,  
+    ...  
+    [last pivoted column] AS <column name>  
+FROM  
+    (<SELECT query that produces the data>)   
+    AS <alias for the source query>  
+PIVOT  
+(  
+    <aggregation function>(<column being aggregated>)  
+FOR   
+[<column that contains the values that will become column headers>]   
+    IN ( [first pivoted column], [second pivoted column],  
+    ... [last pivoted column])  *NOTE* Must use [] around column names that are do start with an alpha character.
+) AS <alias for the pivot table>  
+<optional ORDER BY clause>;
+
+*/
+
+with myTable as 
+	(select year(DateofTransaction) as TheYear, month(DateofTransaction) as TheMonth, Amount from tblTransaction)
+select * from myTable
+PIVOT (sum(Amount) for TheMonth in ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])) as myPvt
+ORDER BY TheYear 
+
+/* Unpivot
+
+UNPIVOT carries out almost the reverse operation of PIVOT, by rotating columns into rows.
+
+*/
+SELECT *
+  FROM [tblPivot]
+UNPIVOT (Amount FOR Month IN ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])) AS tblUnPivot
+where Amount <> 0
+order by TheYear
+
+
+
+
 
 
 
