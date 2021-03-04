@@ -288,6 +288,16 @@ Where EmployeeNumber in
     (Select EmployeeNumber from tblEmployee where EmployeeLastName like 'y%')
 order by EmployeeNumber
 
-	
+select * 
+from tblTransaction as T
+Where EmployeeNumber not in
+    (Select EmployeeNumber from tblEmployee where EmployeeLastName like 'y%')
+order by EmployeeNumber --must be in tblTransaction, and NOT 126-129
+
+select * 
+from tblTransaction as T
+Where EmployeeNumber in
+    (Select EmployeeNumber from tblEmployee where EmployeeLastName  not like 'y%')
+order by EmployeeNumber --must be in tblEmployee and tblTransaction, and NOT 126-129	
 
 
