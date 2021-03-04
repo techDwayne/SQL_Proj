@@ -310,3 +310,79 @@ order by EmployeeNumber
 
 --any/some == OR
 --all == AND
+
+/* using RANK() in  Subqueries
+
+*/
+
+select * from
+(select D.Department, EmployeeNumber, EmployeeFirstName, EmployeeLastName,
+       rank() over(partition by D.Department order by E.EmployeeNumber) as TheRank
+ from tblDepartment as D 
+ join tblEmployee as E on D.Department = E.Department) as MyTable
+where TheRank <= 5
+order by Department, EmployeeNumber
+
+/* WITH STATEMENT_ID
+Specifies a temporary named result set, known as a common table expression (CTE). This is derived from a simple 
+query and defined within the execution scope of a single SELECT, INSERT, UPDATE, DELETE or MERGE statement. 
+This clause can also be used in a CREATE VIEW statement as part of its defining SELECT statement. A common table 
+expression can include references to itself. This is referred to as a recursive common table expression.
+
+*/
+
+with tblWithRanking as
+(select D.Department, EmployeeNumber, EmployeeFirstName, EmployeeLastName,
+	rank() over(partition by D.Department order by E.EmployeeNumber) as TheRank
+from tblDepartment as D 
+	join tblEmployee as E on D.Department = E.Department),
+Transaction2014 as 
+	(select * from tblTransaction where DateofTransaction < '2015-01-01')
+select * from tblWithRanking left join Transaction2014 on tblWithRanking.EmployeeNumber =Transaction2014.EmployeeNumber
+where TheRank <= 5
+order by Department, tblWithRanking.EmployeeNumber
+
+
+/* example generating dynamic max unused employee number 
+
+*/
+
+with Numbers as (
+select top(select max(EmployeeNumber)AS maxEmpID from tblTransaction) ROW_NUMBER() over(order by (select null)) as RowNumber
+from tblTransaction AS U)
+select U.RowNumber from Numbers as U
+left join tblTransaction as T
+on U.RowNumber = T.EmployeeNumber
+where T.EmployeeNumber is null
+order by U.RowNumber 
+
+/* Grouping Numbers
+example generating a list of employee numbers who did not perform transactions during specified year 2014
+grouped by employee numbers and showing a total of employees per group who did not perform transactions 
+*/
+with Numbers as (
+select top(select max(EmployeeNumber)AS maxEmpID from tblTransaction) ROW_NUMBER() over(order by (select null)) as RowNumber
+from tblTransaction AS U),
+Transactions2014 as (
+	select * from tblTransaction where DateofTransaction >='2014-01-01' and DateofTransaction<='2015-01-01'),
+tblGap as (
+select U.RowNumber,
+	RowNumber - LAG(RowNumber) over(order by RowNumber) as PreviousRowNumber,
+	LEAD(RowNumber) over(order by RowNumber) - RowNumber as NextRowNumber,
+	case  when RowNumber - LAG(RowNumber) over(order by RowNumber) = 1 then 0 else 1 end as GroupGap
+from Numbers as U
+left join Transactions2014 as T
+on U.RowNumber = T.EmployeeNumber
+where T.EmployeeNumber is null), 
+tblGroup as (
+select *, sum(GroupGap) over(Order By RowNumber) as TheGroup
+from tblGap)
+select  min(RowNumber) as StartingEmpNumber, max(RowNumber) as EndingEmpNumber,
+	max(RowNumber) - Min(RowNumber) +1 as NumberEmployees
+from tblGroup
+group by TheGroup
+order by TheGroup 
+
+
+
+
