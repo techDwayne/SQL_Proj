@@ -449,9 +449,6 @@ on E.Manager = M.EmployeeNumber
 
 rollback tran
 
-/* Recursive CTE
-
-*/
 
 
 
