@@ -427,6 +427,30 @@ UNPIVOT (Amount FOR Month IN ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10],
 where Amount <> 0
 order by TheYear
 
+/*
+
+Self Join: 
+You can join a table to itself even if the table does not have a reflexive relationship in the database.
+
+*/
+
+begin tran
+alter table tblEmployee
+add Manager int
+go
+update tblEmployee
+set Manager = ((EmployeeNumber-123)/10)+123
+where EmployeeNumber>123
+select E.EmployeeNumber, E.EmployeeFirstName, E.EmployeeLastName, E.Manager, 
+		M.EmployeeNumber as ManagerNumber, M.EmployeeFirstName as ManagerFirstName, M.EmployeeLastName as ManagerLastName
+from tblEmployee as E
+left Join tblEmployee as M
+on E.Manager = M.EmployeeNumber
+
+rollback tran
+
+/* Recursive CTE
+
 
 
 
