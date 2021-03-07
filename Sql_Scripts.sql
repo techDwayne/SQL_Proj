@@ -482,6 +482,34 @@ select * from myTable
 
 rollback tran
 
+/* FUNCTIONS
+Scalre
+In Line Table
+Multi Line Table
+
+Can be used in select or where statements 
+Can be joined with tables using 'apply' 
+*/
+SELECT * 
+from dbo.TransList(123) --Function
+GO
+
+select *, (select count(*) from dbo.TransList(E.EmployeeNumber)) as NumTransactions
+from tblEmployee as E
+
+select *
+from tblEmployee as E
+outer apply TransList(E.EmployeeNumber) as T --apply takes the place of a join when using Functions 
+
+select *
+from tblEmployee as E
+cross apply TransList(E.EmployeeNumber) as T
+
+--outer apply = LEFT JOIN
+--cross apply = INNER JOIN
+
+
+
 
 
 
