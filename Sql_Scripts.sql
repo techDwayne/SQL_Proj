@@ -483,7 +483,7 @@ select * from myTable
 rollback tran
 
 /* FUNCTIONS
-Scalre
+Scaler
 In Line Table
 Multi Line Table
 
@@ -507,6 +507,24 @@ cross apply TransList(E.EmployeeNumber) as T
 
 --outer apply = LEFT JOIN
 --cross apply = INNER JOIN
+
+/* GUID
+Use NONSEQUENTIALID() to create random IDENDITY
+Unique 128 bit NUMBER
+Can be used as IDENDITY in a table
+16 BYTE
+
+*/
+
+begin tran
+Create table tblEmployee4
+(UniqueID uniqueidentifier CONSTRAINT df_tblEmployee4_UniqueID DEFAULT NEWSEQUENTIALID(),
+EmployeeNumber int CONSTRAINT uq_tblEmployee4_EmployeeNumber UNIQUE)
+Insert into tblEmployee4(EmployeeNumber)
+VALUES (1), (2), (3)
+select * from tblEmployee4
+rollback tran
+
 
 
 
