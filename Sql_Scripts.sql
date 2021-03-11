@@ -525,6 +525,136 @@ VALUES (1), (2), (3)
 select * from tblEmployee4
 rollback tran
 
+/* XML
+SQL can export the results of a query as XML
+
+*/
+--For XML RAW  exports attributes
+select E.EmployeeNumber, E.EmployeeFirstName, E.EmployeeLastName
+	,E.DateOfBirth, T.Amount, T.DateOfTransaction
+from [dbo].[tblEmployee] as E
+left join [dbo].[tblTransaction] as T
+on E.EmployeeNumber = T.EmployeeNumber
+where E.EmployeeNumber between 200 and 202
+for xml raw ('MyRow'), elements --elements will output as individual elements, well formed XML
+
+/* Sample output: 
+*/
+<MyRow>
+  <EmployeeNumber>200</EmployeeNumber>
+  <EmployeeFirstName>Michiko</EmployeeFirstName>
+  <EmployeeLastName>Robinett</EmployeeLastName>
+  <DateOfBirth>1981-12-23</DateOfBirth>
+  <Amount>958.9400</Amount>
+  <DateOfTransaction>2015-02-25T00:00:00</DateOfTransaction>
+</MyRow>
+
+/* For XML Auto
+Exports as nested attributes 
+*/
+
+select E.EmployeeNumber, E.EmployeeFirstName, E.EmployeeLastName
+	,E.DateOfBirth, T.Amount, T.DateOfTransaction
+from [dbo].[tblEmployee] as E
+left join [dbo].[tblTransaction] as T
+on E.EmployeeNumber = T.EmployeeNumber
+where E.EmployeeNumber between 200 and 202
+for xml auto
+
+/*Sample Output
+*/
+<E EmployeeNumber="200" EmployeeFirstName="Michiko" EmployeeLastName="Robinett" DateOfBirth="1981-12-23">
+  <T Amount="958.9400" DateOfTransaction="2015-02-25T00:00:00" />
+  <T Amount="-5.0900" DateOfTransaction="2015-08-31T00:00:00" />
+</E>
+
+/* add , elements to For XML Auto to output as elements 
+
+Sample Ouput
+*/
+
+<E>
+  <EmployeeNumber>200</EmployeeNumber>
+  <EmployeeFirstName>Michiko</EmployeeFirstName>
+  <EmployeeLastName>Robinett</EmployeeLastName>
+  <DateOfBirth>1981-12-23</DateOfBirth>
+  <T>
+    <Amount>958.9400</Amount>
+    <DateOfTransaction>2015-02-25T00:00:00</DateOfTransaction>
+  </T>
+  <T>
+    <Amount>-5.0900</Amount>
+    <DateOfTransaction>2015-08-31T00:00:00</DateOfTransaction>
+  </T>
+</E>
+
+/* For XML Path
+*/
+
+select E.EmployeeFirstName as '@EmployeeFirstName'
+	   , E.EmployeeLastName as '@EmployeeLastName'
+	   , E.EmployeeNumber
+       , E.DateOfBirth
+	   , T.Amount as 'Transaction/Amount'
+	   , T.DateOfTransaction as 'Transaction/DateOfTransaction'
+from [dbo].[tblEmployee] as E
+left join [dbo].[tblTransaction] as T
+on E.EmployeeNumber = T.EmployeeNumber
+where E.EmployeeNumber between 200 and 201
+for xml path('Employees'), ROOT('MyXML')
+
+--Sample Output (Well Formed XML)
+<MyXML>
+  <Employees EmployeeFirstName="Michiko" EmployeeLastName="Robinett">
+    <EmployeeNumber>200</EmployeeNumber>
+    <DateOfBirth>1981-12-23</DateOfBirth>
+    <Transaction>
+      <Amount>958.9400</Amount>
+      <DateOfTransaction>2015-02-25T00:00:00</DateOfTransaction>
+    </Transaction>
+  </Employees>
+  <Employees EmployeeFirstName="Michiko" EmployeeLastName="Robinett">
+    <EmployeeNumber>200</EmployeeNumber>
+    <DateOfBirth>1981-12-23</DateOfBirth>
+    <Transaction>
+      <Amount>-5.0900</Amount>
+      <DateOfTransaction>2015-08-31T00:00:00</DateOfTransaction>
+    </Transaction>
+  </Employees>
+  <Employees EmployeeFirstName="Carol" EmployeeLastName="Roberts">
+    <EmployeeNumber>201</EmployeeNumber>
+    <DateOfBirth>1991-06-25</DateOfBirth>
+    <Transaction>
+      <Amount>-351.4100</Amount>
+      <DateOfTransaction>2014-04-14T00:00:00</DateOfTransaction>
+    </Transaction>
+  </Employees>
+  <Employees EmployeeFirstName="Carol" EmployeeLastName="Roberts">
+    <EmployeeNumber>201</EmployeeNumber>
+    <DateOfBirth>1991-06-25</DateOfBirth>
+    <Transaction>
+      <Amount>-893.2300</Amount>
+      <DateOfTransaction>2014-09-18T00:00:00</DateOfTransaction>
+    </Transaction>
+  </Employees>
+  <Employees EmployeeFirstName="Carol" EmployeeLastName="Roberts">
+    <EmployeeNumber>201</EmployeeNumber>
+    <DateOfBirth>1991-06-25</DateOfBirth>
+    <Transaction>
+      <Amount>-893.2300</Amount>
+      <DateOfTransaction>2014-09-19T00:00:00</DateOfTransaction>
+    </Transaction>
+  </Employees>
+</MyXML>
+
+/* 
+
+
+
+
+
+
+
 
 
 
