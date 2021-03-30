@@ -323,7 +323,7 @@ select * from
 where TheRank <= 5
 order by Department, EmployeeNumber
 
-/* WITH STATEMENT_ID
+/* WITH STATEMENT_ID (CTE Table)
 Specifies a temporary named result set, known as a common table expression (CTE). This is derived from a simple 
 query and defined within the execution scope of a single SELECT, INSERT, UPDATE, DELETE or MERGE statement. 
 This clause can also be used in a CREATE VIEW statement as part of its defining SELECT statement. A common table 
@@ -335,9 +335,9 @@ with tblWithRanking as
 (select D.Department, EmployeeNumber, EmployeeFirstName, EmployeeLastName,
 	rank() over(partition by D.Department order by E.EmployeeNumber) as TheRank
 from tblDepartment as D 
-	join tblEmployee as E on D.Department = E.Department),
+	join tblEmployee as E on D.Department = E.Department), --CTE 1
 Transaction2014 as 
-	(select * from tblTransaction where DateofTransaction < '2015-01-01')
+	(select * from tblTransaction where DateofTransaction < '2015-01-01') --CTE2
 select * from tblWithRanking left join Transaction2014 on tblWithRanking.EmployeeNumber =Transaction2014.EmployeeNumber
 where TheRank <= 5
 order by Department, tblWithRanking.EmployeeNumber
