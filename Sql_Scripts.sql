@@ -647,7 +647,26 @@ for xml path('Employees'), ROOT('MyXML')
   </Employees>
 </MyXML>
 
-/* 
+/* Temp TABLES
+Temp Tables can be used to store data you need to re-use for calculations. 
+
+Example below from SQLAnalystTraining Database */
+
+Drop Table if Exists #Temp_Employee2 --drops the table if it was already created. 
+Create table #Temp_Employee2 (
+JobTitle varchar (50),
+EmployeesPerJob int, 
+AvgAge int,
+AvgSalary int)
+
+Insert into #Temp_Employee2
+Select JobTitle, Count(JobTitle), Avg(Age), Avg(Salary)
+from EmployeeDemographics emp
+join EmployeeSalary sal
+	on emp.EmployeeID = sal.EmployeeID
+group by JobTitle
+
+Select * from #Temp_Employee2
 
 
 
